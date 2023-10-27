@@ -1,5 +1,6 @@
 package com.example.commerce.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.validation.constraints.Email;
@@ -24,7 +25,7 @@ public class RegisterUser {
     private String password;
 
     @Past
-    private LocalDateTime birth;
+    private LocalDate birth;
 
     @NotBlank
     private String address;

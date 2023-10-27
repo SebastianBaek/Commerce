@@ -1,5 +1,6 @@
 package com.example.commerce.controller;
 
+import com.example.commerce.model.LoginUser;
 import com.example.commerce.model.RegisterUser;
 import com.example.commerce.service.UserService;
 import javax.validation.Valid;
@@ -20,5 +21,10 @@ public class UserController {
   @PostMapping("/register")
   public ResponseEntity<?> userRegister(@RequestBody @Valid RegisterUser.Request registerForm) {
     return ResponseEntity.ok(userService.registerUser(registerForm));
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<?> userLogin(@RequestBody @Valid LoginUser.Request loginForm) {
+    return ResponseEntity.ok(userService.loginUser(loginForm));
   }
 }
