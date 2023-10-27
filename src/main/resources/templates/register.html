@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Title</title>
+  <style>
+    .back {
+      background-color: #D8D8D8;
+    }
+
+    .content {
+      background-color: white;
+      border: 2px solid teal;
+      width: auto;
+      margin: 50px;
+      padding-left: 10%;
+      font-size: 2vw;
+    }
+  </style>
+</head>
+<body>
+<div class="back">
+  <div class="content">
+    <p><span th:text="${username}"></span>님, 반갑습니다. &#128516;</p>
+    <p>아래 링크를 통해 회원가입을 완료해주세요.</p>
+    <a th:href="${verification_url}"><span th:utext="${verification_url}"></span></a>
+  </div>
+</div>
+</body>
+</html>
