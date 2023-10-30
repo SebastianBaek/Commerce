@@ -1,8 +1,11 @@
 package com.example.commerce.service;
 
+import com.example.commerce.common.MailComponent;
 import com.example.commerce.domain.User;
 import com.example.commerce.exception.impl.AlreadyExistsUserEmailException;
 import com.example.commerce.exception.impl.AlreadyExistsUsernameException;
+import com.example.commerce.exception.impl.EmailDoesNotAuthenticatedException;
+import com.example.commerce.exception.impl.UserNotFoundException;
 import com.example.commerce.exception.impl.UsernamePasswordNotMatchException;
 import com.example.commerce.model.LoginUser;
 import com.example.commerce.model.RegisterUser;
@@ -21,6 +24,7 @@ public class UserService {
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
   private final TokenProvider tokenProvider;
+  private final MailComponent mailComponent;
 
   public RegisterUser.Response registerUser(RegisterUser.Request registerForm) {
     userEmailDuplicatedCheck(registerForm.getEmail());
@@ -33,8 +37,11 @@ public class UserService {
         .email(registerForm.getEmail())
         .username(registerForm.getUsername())
         .password(registerForm.getPassword())
+        .emailVerification(false)
         .roles(registerForm.getRole())
         .build());
+
+    mailComponent.registerVerifyEmailSend(user.getId(), user.getEmail(), user.getUsername());
 
     return RegisterUser.Response.builder()
         .username(user.getUsername())
@@ -62,11 +69,25 @@ public class UserService {
       throw new UsernamePasswordNotMatchException();
     }
 
+    if (!user.isEmailVerification()) {
+      throw new EmailDoesNotAuthenticatedException();
+    }
+
     String token = tokenProvider.generateToken(user.getUsername(), user.getRoles());
 
     return LoginUser.Response.builder()
         .username(user.getUsername())
         .token(token)
         .build();
+  }
+
+  public String verifyEmail(Long id) {
+    User user = userRepository.findById(id)
+        .orElseThrow(UserNotFoundException::new);
+
+    user.setEmailVerification(true);
+    userRepository.save(user);
+
+    return user.getUsername() + "님의 이메일 인증이 완료되었습니다.";
   }
 }
