@@ -26,6 +26,7 @@ public class UserService {
   private final TokenProvider tokenProvider;
   private final MailComponent mailComponent;
 
+  // 이메일 및 아이디 중복 체크 후 비밀번호를 암호화하여 저장
   public RegisterUser.Response registerUser(RegisterUser.Request registerForm) {
     userEmailDuplicatedCheck(registerForm.getEmail());
 
@@ -49,18 +50,21 @@ public class UserService {
         .build();
   }
 
+  // 이메일 중복 체크
   private void userEmailDuplicatedCheck(String email) {
     if (userRepository.existsByEmail(email)) {
       throw new AlreadyExistsUserEmailException();
     }
   }
 
+  // 아이디 중복 체크
   private void usernameDuplicatedCheck(String username) {
     if (userRepository.existsByUsername(username)) {
       throw new AlreadyExistsUsernameException();
     }
   }
 
+  // 비밀번호 일치 확인 및 이메일 인증 여부 확인 후 토큰 발급
   public LoginUser.Response loginUser(LoginUser.Request loginForm) {
     User user = userRepository.findByUsername(loginForm.getUsername())
         .orElseThrow(UsernamePasswordNotMatchException::new);
@@ -81,6 +85,7 @@ public class UserService {
         .build();
   }
 
+  // 이메일 인증
   public String verifyEmail(Long id) {
     User user = userRepository.findById(id)
         .orElseThrow(UserNotFoundException::new);
