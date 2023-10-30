@@ -34,6 +34,9 @@ public class User extends BaseEntity implements UserDetails {
   @Column(nullable = false)
   private String password;
 
+  @Column(nullable = false)
+  private boolean emailVerification;
+
   @ElementCollection(fetch = FetchType.EAGER)
   private List<String> roles = new ArrayList<>();
 
