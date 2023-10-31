@@ -46,7 +46,7 @@ public class UserService {
 
     return RegisterUser.Response.builder()
         .username(user.getUsername())
-        .registeredAt(user.getCreatedAt())
+        .createdAt(user.getCreatedAt())
         .build();
   }
 

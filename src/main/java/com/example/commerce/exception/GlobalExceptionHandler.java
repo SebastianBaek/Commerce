@@ -19,5 +19,4 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(errorResponse,
         Objects.requireNonNull(HttpStatus.resolve(e.getStatusCode())));
   }
-
 }

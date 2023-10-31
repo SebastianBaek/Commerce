@@ -12,6 +12,7 @@ import lombok.Data;
 public class RegisterUser {
 
   @Data
+  @Builder
   public static class Request {
 
     @Email
@@ -42,7 +43,7 @@ public class RegisterUser {
 
     private String username;
 
-    private LocalDateTime registeredAt;
+    private LocalDateTime createdAt;
 
   }
 }
