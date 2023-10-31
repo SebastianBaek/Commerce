@@ -6,13 +6,17 @@ import java.util.List;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 public class RegisterUser {
 
   @Data
   @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
   public static class Request {
 
     @Email
@@ -39,6 +43,8 @@ public class RegisterUser {
 
   @Data
   @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
   public static class Response {
 
     private String username;

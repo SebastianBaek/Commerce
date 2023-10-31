@@ -4,10 +4,13 @@ import com.example.commerce.common.MailComponent;
 import com.example.commerce.domain.User;
 import com.example.commerce.exception.CustomException;
 import com.example.commerce.exception.ErrorCode;
+import com.example.commerce.model.FindPasswordRequest;
+import com.example.commerce.model.FindUsernameRequest;
 import com.example.commerce.model.LoginUser;
 import com.example.commerce.model.RegisterUser;
 import com.example.commerce.repository.UserRepository;
 import com.example.commerce.security.TokenProvider;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,7 +42,7 @@ public class UserService {
         .roles(registerForm.getRole())
         .build());
 
-    mailComponent.registerVerifyEmailSend(user.getId(), user.getEmail(), user.getUsername());
+    mailComponent.sendVerifyLink(user.getId(), user.getEmail(), user.getUsername());
 
     return RegisterUser.Response.builder()
         .username(user.getUsername())
@@ -83,7 +86,7 @@ public class UserService {
   }
 
   // 이메일 인증
-  public String verifyEmail(Long id) {
+  public String verifyUserEmail(Long id) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
@@ -91,5 +94,30 @@ public class UserService {
     userRepository.save(user);
 
     return user.getUsername() + "님의 이메일 인증이 완료되었습니다.";
+  }
+
+  public String findUsername(FindUsernameRequest request) {
+    User user = userRepository.findByEmail(request.getEmail())
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+    mailComponent.sendUsername(user.getEmail(), user.getUsername());
+
+    return user.getEmail() + "로 아이디 전송이 완료되었습니다.";
+  }
+
+  public String findPassword(FindPasswordRequest request) {
+    String email = request.getEmail();
+    String username = request.getUsername();
+
+    User user = userRepository.findByEmailAndUsername(email, username)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+    String temporaryPassword = UUID.randomUUID().toString().replace("-", "");
+    user.setPassword(passwordEncoder.encode(temporaryPassword));
+    userRepository.save(user);
+
+    mailComponent.sendTemporaryPassword(user.getEmail(), user.getUsername(), temporaryPassword);
+
+    return user.getEmail() + "로 임시 비밀번호 전송이 완료되었습니다.";
   }
 }

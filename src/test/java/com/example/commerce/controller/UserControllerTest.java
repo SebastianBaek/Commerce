@@ -137,7 +137,7 @@ class UserControllerTest extends CommonApiTest {
   @Test
   void verifyUserEmailSuccess() throws Exception {
     //given
-    given(userService.verifyEmail(anyLong()))
+    given(userService.verifyUserEmail(anyLong()))
         .willReturn("홍길동님의 이메일 인증이 완료되었습니다.");
     //when
     //then
@@ -146,6 +146,6 @@ class UserControllerTest extends CommonApiTest {
         .andExpect(content().string("홍길동님의 이메일 인증이 완료되었습니다."))
         .andDo(print());
 
-    verify(userService).verifyEmail(anyLong());
+    verify(userService).verifyUserEmail(anyLong());
   }
 }

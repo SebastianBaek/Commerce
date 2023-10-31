@@ -1,5 +1,7 @@
 package com.example.commerce.controller;
 
+import com.example.commerce.model.FindPasswordRequest;
+import com.example.commerce.model.FindUsernameRequest;
 import com.example.commerce.model.LoginUser;
 import com.example.commerce.model.RegisterUser;
 import com.example.commerce.service.UserService;
@@ -7,6 +9,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +38,18 @@ public class UserController {
   // 회원가입시 이메일 인증
   @GetMapping("/verify/{id}")
   public ResponseEntity<?> verifyUserEmail(@PathVariable Long id) {
-    return ResponseEntity.ok(userService.verifyEmail(id));
+    return ResponseEntity.ok(userService.verifyUserEmail(id));
+  }
+
+  // 아이디 찾기
+  @PostMapping("/find/username")
+  public ResponseEntity<?> findUsername(@RequestBody @Valid FindUsernameRequest request) {
+    return ResponseEntity.ok(userService.findUsername(request));
+  }
+
+  // 임시 비밀번호 발급
+  @PatchMapping("/find/password")
+  public ResponseEntity<?> findPassword(@RequestBody @Valid FindPasswordRequest request) {
+    return ResponseEntity.ok(userService.findPassword(request));
   }
 }

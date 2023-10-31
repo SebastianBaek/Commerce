@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Title</title>
+  <style>
+    .back {
+      background-color: #D8D8D8;
+    }
+
+    .content {
+      background-color: white;
+      border: 2px solid teal;
+      width: auto;
+      margin: 50px;
+      padding-left: 10%;
+      font-size: 2vw;
+    }
+  </style>
+</head>
+<body>
+<div class="back">
+  <div class="content">
+    <p>요청하신 아이디는 <span th:text="${username}"></span>입니다. &#128516;</p>
+    <p>항상 Commerce의 서비스를 이용해 주셔서 감사합니다.</p>
+  </div>
+</div>
+</body>
+</html>
