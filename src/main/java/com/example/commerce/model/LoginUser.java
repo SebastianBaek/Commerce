@@ -7,6 +7,7 @@ import lombok.Data;
 public class LoginUser {
 
   @Data
+  @Builder
   public static class Request {
 
     @NotBlank

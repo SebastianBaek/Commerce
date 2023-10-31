@@ -1,14 +1,18 @@
 package com.example.commerce.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.commerce.CommonApiTest;
+import com.example.commerce.model.LoginUser;
 import com.example.commerce.model.RegisterUser;
 import com.example.commerce.model.RegisterUser.Request;
 import com.example.commerce.repository.UserRepository;
@@ -42,8 +46,8 @@ class UserControllerTest extends CommonApiTest {
   private UserRepository userRepository;
 
   @Test
-  @DisplayName("유저 회원가입 API 테스트")
-  void registerUserTest() throws Exception {
+  @DisplayName("유저 회원가입 API 성공 테스트")
+  void registerUserSuccess() throws Exception {
     //given
     given(userService.registerUser(any()))
         .willReturn(RegisterUser.Response.builder()
@@ -71,5 +75,77 @@ class UserControllerTest extends CommonApiTest {
         .andDo(print());
 
     verify(userService).registerUser(any());
+  }
+
+  @Test
+  @DisplayName("유저 회원가입 API 유효성 검증 실패 테스트")
+  void registerUserInvalidFail() throws Exception {
+    //given
+    given(userService.registerUser(any()))
+        .willReturn(RegisterUser.Response.builder()
+            .username("홍길동")
+            .createdAt(LocalDateTime.now())
+            .build());
+
+    RegisterUser.Request request = Request.builder()
+        .email("gnsrudqor@naver.com")
+        .username("")
+        .password("1234")
+        .birth(LocalDate.now().minusDays(1))
+        .address("서울")
+        .phone("01012345678")
+        .build();
+    //when
+    //then
+    mockMvc.perform(
+            post("/user/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.statusCode").exists())
+        .andExpect(jsonPath("$.message").exists())
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("유저 로그인 API 성공 테스트")
+  void loginUserSuccess() throws Exception {
+    //given
+    given(userService.loginUser(any()))
+        .willReturn(LoginUser.Response.builder()
+            .username("홍길동")
+            .token("ABC")
+            .build());
+
+    LoginUser.Request request = LoginUser.Request.builder()
+        .username("홍길동")
+        .password("1234")
+        .build();
+    //when
+    //then
+    mockMvc.perform(
+            post("/user/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(jsonPath("$.username").exists())
+        .andExpect(jsonPath("$.token").exists())
+        .andDo(print());
+
+    verify(userService).loginUser(any());
+  }
+
+  @Test
+  void verifyUserEmailSuccess() throws Exception {
+    //given
+    given(userService.verifyEmail(anyLong()))
+        .willReturn("홍길동님의 이메일 인증이 완료되었습니다.");
+    //when
+    //then
+    mockMvc.perform(
+            get("/user/verify/1"))
+        .andExpect(content().string("홍길동님의 이메일 인증이 완료되었습니다."))
+        .andDo(print());
+
+    verify(userService).verifyEmail(anyLong());
   }
 }
