@@ -2,11 +2,8 @@ package com.example.commerce.service;
 
 import com.example.commerce.common.MailComponent;
 import com.example.commerce.domain.User;
-import com.example.commerce.exception.impl.AlreadyExistsUserEmailException;
-import com.example.commerce.exception.impl.AlreadyExistsUsernameException;
-import com.example.commerce.exception.impl.EmailDoesNotAuthenticatedException;
-import com.example.commerce.exception.impl.UserNotFoundException;
-import com.example.commerce.exception.impl.UsernamePasswordNotMatchException;
+import com.example.commerce.exception.CustomException;
+import com.example.commerce.exception.ErrorCode;
 import com.example.commerce.model.LoginUser;
 import com.example.commerce.model.RegisterUser;
 import com.example.commerce.repository.UserRepository;
@@ -53,28 +50,28 @@ public class UserService {
   // 이메일 중복 체크
   private void userEmailDuplicatedCheck(String email) {
     if (userRepository.existsByEmail(email)) {
-      throw new AlreadyExistsUserEmailException();
+      throw new CustomException(ErrorCode.ALREADY_EXISTS_USER_EMAIL);
     }
   }
 
   // 아이디 중복 체크
   private void usernameDuplicatedCheck(String username) {
     if (userRepository.existsByUsername(username)) {
-      throw new AlreadyExistsUsernameException();
+      throw new CustomException(ErrorCode.ALREADY_EXISTS_USERNAME);
     }
   }
 
   // 비밀번호 일치 확인 및 이메일 인증 여부 확인 후 토큰 발급
   public LoginUser.Response loginUser(LoginUser.Request loginForm) {
     User user = userRepository.findByUsername(loginForm.getUsername())
-        .orElseThrow(UsernamePasswordNotMatchException::new);
+        .orElseThrow(() -> new CustomException(ErrorCode.USERNAME_AND_PASSWORD_NOT_MATCH));
 
     if (!passwordEncoder.matches(loginForm.getPassword(), user.getPassword())) {
-      throw new UsernamePasswordNotMatchException();
+      throw new CustomException(ErrorCode.USERNAME_AND_PASSWORD_NOT_MATCH);
     }
 
     if (!user.isEmailVerification()) {
-      throw new EmailDoesNotAuthenticatedException();
+      throw new CustomException(ErrorCode.EMAIL_IS_NOT_VERIFIED);
     }
 
     String token = tokenProvider.generateToken(user.getUsername(), user.getRoles());
@@ -88,7 +85,7 @@ public class UserService {
   // 이메일 인증
   public String verifyEmail(Long id) {
     User user = userRepository.findById(id)
-        .orElseThrow(UserNotFoundException::new);
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
     user.setEmailVerification(true);
     userRepository.save(user);

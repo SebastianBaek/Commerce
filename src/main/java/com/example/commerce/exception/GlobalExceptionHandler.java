@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(AbstractException.class)
-  public ResponseEntity<?> handleCustomException(AbstractException e) {
+  @ExceptionHandler(CustomException.class)
+  public ResponseEntity<?> handleCustomException(CustomException e) {
     ErrorResponse errorResponse = ErrorResponse.builder()
-        .statusCode(e.getStatusCode())
-        .message(e.getMessage())
+        .statusCode(e.getErrorCode().getHttpStatus().value())
+        .message(e.getErrorCode().getMessage())
         .build();
 
     return new ResponseEntity<>(errorResponse,
-        Objects.requireNonNull(HttpStatus.resolve(e.getStatusCode())));
+        Objects.requireNonNull(HttpStatus.resolve(errorResponse.getStatusCode())));
   }
 }
