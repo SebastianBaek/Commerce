@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -12,6 +13,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.commerce.CommonApiTest;
+import com.example.commerce.model.FindPasswordRequest;
+import com.example.commerce.model.FindUsernameRequest;
 import com.example.commerce.model.LoginUser;
 import com.example.commerce.model.RegisterUser;
 import com.example.commerce.model.RegisterUser.Request;
@@ -127,6 +130,7 @@ class UserControllerTest extends CommonApiTest {
             post("/user/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
         .andExpect(jsonPath("$.username").exists())
         .andExpect(jsonPath("$.token").exists())
         .andDo(print());
@@ -135,6 +139,7 @@ class UserControllerTest extends CommonApiTest {
   }
 
   @Test
+  @DisplayName("회원 이메일 인증 성공 테스트")
   void verifyUserEmailSuccess() throws Exception {
     //given
     given(userService.verifyUserEmail(anyLong()))
@@ -143,9 +148,50 @@ class UserControllerTest extends CommonApiTest {
     //then
     mockMvc.perform(
             get("/user/verify/1"))
+        .andExpect(status().isOk())
         .andExpect(content().string("홍길동님의 이메일 인증이 완료되었습니다."))
         .andDo(print());
 
     verify(userService).verifyUserEmail(anyLong());
+  }
+
+  @Test
+  @DisplayName("회원 아이디 찾기 성공 테스트")
+  void findUsernameSuccess() throws Exception {
+    //given
+    given(userService.findUsername(any()))
+        .willReturn("test@naver.com로 아이디 전송이 완료되었습니다.");
+
+    FindUsernameRequest request = new FindUsernameRequest("test@naver.com");
+    //when
+    //then
+    mockMvc.perform(
+            post("/user/find/username")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andExpect(content().string("test@naver.com로 아이디 전송이 완료되었습니다."))
+        .andDo(print());
+    verify(userService).findUsername(any());
+  }
+
+  @Test
+  @DisplayName("회원 임시 비밀번호 발급 성공 테스트")
+  void findUsernamePassword() throws Exception {
+    //given
+    given(userService.findPassword(any()))
+        .willReturn("test@naver.com로 임시 비밀번호 전송이 완료되었습니다.");
+
+    FindPasswordRequest request = new FindPasswordRequest("test@naver.com", "test");
+    //when
+    //then
+    mockMvc.perform(
+            patch("/user/find/password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andExpect(content().string("test@naver.com로 임시 비밀번호 전송이 완료되었습니다."))
+        .andDo(print());
+    verify(userService).findPassword(any());
   }
 }
