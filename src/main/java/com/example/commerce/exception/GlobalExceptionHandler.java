@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<?> handleMethodArgumentNotValidException(
       MethodArgumentNotValidException e) {
-    log.error("유효성 검증 실패");
+    log.info("유효성 검증 실패");
 
     ErrorResponse errorResponse = ErrorResponse.builder()
         .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<?> handleHttpMessageNotReadableException(
       HttpMessageNotReadableException e) {
-    log.error("입력 데이터 형식 오류 발생");
+    log.info("입력 데이터 형식 오류 발생");
 
     ErrorResponse errorResponse = ErrorResponse.builder()
         .statusCode(HttpStatus.BAD_REQUEST.value())

@@ -86,26 +86,22 @@ public class UserService {
   }
 
   // 이메일 인증
-  public String verifyUserEmail(Long id) {
+  public void verifyUserEmail(Long id) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
     user.setEmailVerification(true);
     userRepository.save(user);
-
-    return user.getUsername() + "님의 이메일 인증이 완료되었습니다.";
   }
 
-  public String findUsername(FindUsernameRequest request) {
+  public void findUsername(FindUsernameRequest request) {
     User user = userRepository.findByEmail(request.getEmail())
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
     mailComponent.sendUsername(user.getEmail(), user.getUsername());
-
-    return user.getEmail() + "로 아이디 전송이 완료되었습니다.";
   }
 
-  public String findPassword(FindPasswordRequest request) {
+  public void findPassword(FindPasswordRequest request) {
     String email = request.getEmail();
     String username = request.getUsername();
 
@@ -117,7 +113,5 @@ public class UserService {
     userRepository.save(user);
 
     mailComponent.sendTemporaryPassword(user.getEmail(), user.getUsername(), temporaryPassword);
-
-    return user.getEmail() + "로 임시 비밀번호 전송이 완료되었습니다.";
   }
 }

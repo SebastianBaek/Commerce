@@ -38,18 +38,18 @@ public class UserController {
   // 회원가입시 이메일 인증
   @GetMapping("/verify/{id}")
   public ResponseEntity<?> verifyUserEmail(@PathVariable Long id) {
-    return ResponseEntity.ok(userService.verifyUserEmail(id));
+    return ResponseEntity.ok().build();
   }
 
   // 아이디 찾기
   @PostMapping("/find/username")
   public ResponseEntity<?> findUsername(@RequestBody @Valid FindUsernameRequest request) {
-    return ResponseEntity.ok(userService.findUsername(request));
+    return ResponseEntity.ok().build();
   }
 
   // 임시 비밀번호 발급
   @PatchMapping("/find/password")
   public ResponseEntity<?> findPassword(@RequestBody @Valid FindPasswordRequest request) {
-    return ResponseEntity.ok(userService.findPassword(request));
+    return ResponseEntity.ok().build();
   }
 }
