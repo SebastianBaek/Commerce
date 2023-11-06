@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -17,8 +16,8 @@ import com.example.commerce.model.FindPasswordRequest;
 import com.example.commerce.model.FindUsernameRequest;
 import com.example.commerce.model.LoginUser;
 import com.example.commerce.model.RegisterUser;
-import com.example.commerce.model.RegisterUser.Request;
 import com.example.commerce.repository.UserRepository;
+import com.example.commerce.service.ProductService;
 import com.example.commerce.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
@@ -46,6 +45,9 @@ class UserControllerTest extends CommonApiTest {
   private UserService userService;
 
   @MockBean
+  private ProductService productService;
+
+  @MockBean
   private UserRepository userRepository;
 
   @Test
@@ -58,7 +60,7 @@ class UserControllerTest extends CommonApiTest {
             .createdAt(LocalDateTime.now())
             .build());
 
-    RegisterUser.Request request = Request.builder()
+    RegisterUser.Request request = RegisterUser.Request.builder()
         .email("gnsrudqor@naver.com")
         .username("test")
         .password("1234")
@@ -90,7 +92,7 @@ class UserControllerTest extends CommonApiTest {
             .createdAt(LocalDateTime.now())
             .build());
 
-    RegisterUser.Request request = Request.builder()
+    RegisterUser.Request request = RegisterUser.Request.builder()
         .email("gnsrudqor@naver.com")
         .username("")
         .password("1234")
@@ -142,14 +144,11 @@ class UserControllerTest extends CommonApiTest {
   @DisplayName("회원 이메일 인증 성공 테스트")
   void verifyUserEmailSuccess() throws Exception {
     //given
-    given(userService.verifyUserEmail(anyLong()))
-        .willReturn("홍길동님의 이메일 인증이 완료되었습니다.");
     //when
     //then
     mockMvc.perform(
             get("/user/verify/1"))
         .andExpect(status().isOk())
-        .andExpect(content().string("홍길동님의 이메일 인증이 완료되었습니다."))
         .andDo(print());
 
     verify(userService).verifyUserEmail(anyLong());
@@ -159,9 +158,6 @@ class UserControllerTest extends CommonApiTest {
   @DisplayName("회원 아이디 찾기 성공 테스트")
   void findUsernameSuccess() throws Exception {
     //given
-    given(userService.findUsername(any()))
-        .willReturn("test@naver.com로 아이디 전송이 완료되었습니다.");
-
     FindUsernameRequest request = new FindUsernameRequest("test@naver.com");
     //when
     //then
@@ -170,18 +166,14 @@ class UserControllerTest extends CommonApiTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
-        .andExpect(content().string("test@naver.com로 아이디 전송이 완료되었습니다."))
         .andDo(print());
-    verify(userService).findUsername(any());
+    verify(userService).findUsername(request);
   }
 
   @Test
   @DisplayName("회원 임시 비밀번호 발급 성공 테스트")
   void findUsernamePassword() throws Exception {
     //given
-    given(userService.findPassword(any()))
-        .willReturn("test@naver.com로 임시 비밀번호 전송이 완료되었습니다.");
-
     FindPasswordRequest request = new FindPasswordRequest("test@naver.com", "test");
     //when
     //then
@@ -190,8 +182,7 @@ class UserControllerTest extends CommonApiTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
-        .andExpect(content().string("test@naver.com로 임시 비밀번호 전송이 완료되었습니다."))
         .andDo(print());
-    verify(userService).findPassword(any());
+    verify(userService).findPassword(request);
   }
 }

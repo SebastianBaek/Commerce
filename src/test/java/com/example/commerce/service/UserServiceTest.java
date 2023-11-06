@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 import com.example.commerce.common.MailComponent;
 import com.example.commerce.domain.User;
@@ -239,9 +240,9 @@ class UserServiceTest {
 
     given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
     //when
-    String response = userService.verifyUserEmail(1L);
+    userService.verifyUserEmail(1L);
     //then
-    assertEquals("test님의 이메일 인증이 완료되었습니다.", response);
+    verify(userRepository).save(user);
   }
 
   @Test
@@ -273,9 +274,9 @@ class UserServiceTest {
 
     given(userRepository.findByEmail(anyString())).willReturn(Optional.of(user));
     //when
-    String response = userService.findUsername(request);
+    userService.findUsername(request);
     //then
-    assertEquals("test@naver.com로 아이디 전송이 완료되었습니다.", response);
+    verify(mailComponent).sendUsername(anyString(), anyString());
   }
 
   @Test
@@ -311,9 +312,10 @@ class UserServiceTest {
     given(userRepository.findByEmailAndUsername(anyString(), anyString()))
         .willReturn(Optional.of(user));
     //when
-    String response = userService.findPassword(request);
+    userService.findPassword(request);
     //then
-    assertEquals("test@naver.com로 임시 비밀번호 전송이 완료되었습니다.", response);
+    verify(userRepository).save(user);
+    verify(mailComponent).sendTemporaryPassword(anyString(), anyString(), anyString());
   }
 
   @Test
