@@ -1,6 +1,7 @@
 package com.example.commerce.model;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,9 +16,11 @@ public class LoginUser {
   public static class Request {
 
     @NotBlank
+    @Size(max = 15)
     private String username;
 
     @NotBlank
+    @Size(max = 20)
     private String password;
 
   }
