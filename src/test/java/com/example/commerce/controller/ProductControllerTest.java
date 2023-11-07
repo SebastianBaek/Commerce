@@ -1,6 +1,7 @@
 package com.example.commerce.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -10,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.commerce.CommonApiTest;
+import com.example.commerce.model.ModifyProduct;
 import com.example.commerce.model.RegisterProduct;
 import com.example.commerce.repository.UserRepository;
 import com.example.commerce.service.ProductService;
@@ -92,5 +94,27 @@ class ProductControllerTest extends CommonApiTest {
                 .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isForbidden())
         .andDo(print());
+  }
+
+  @Test
+  @DisplayName("판매자의 상품 수정 성공 테스트")
+  @WithMockUser(authorities = {"ROLE_SELLER"})
+  void modifyProductSuccess() throws Exception {
+    //given
+    ModifyProduct.Request request = ModifyProduct.Request.builder()
+        .productName("상품명")
+        .price(100L)
+        .amount(1L)
+        .maker("Commerce")
+        .build();
+    //when
+    //then
+    mockMvc.perform(
+            post("/product/modify/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andDo(print());
+    verify(productService).modifyProduct(any(), anyLong(), anyString());
   }
 }
