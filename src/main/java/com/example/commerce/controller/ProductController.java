@@ -42,6 +42,7 @@ public class ProductController {
   }
 
   @GetMapping("/getAll")
+  @PreAuthorize("hasRole('SELLER')")
   public ResponseEntity<?> getAllSellerProduct(Authentication authentication) {
     return ResponseEntity.ok(productService.getAllSellerProducts(authentication.getName()));
   }
