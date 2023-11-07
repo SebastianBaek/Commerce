@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +30,7 @@ public class ProductController {
         productService.registerProduct(registerForm, authentication.getName()));
   }
 
-  @PostMapping("/modify/{id}")
+  @PutMapping("/modify/{id}")
   @PreAuthorize("hasRole('SELLER')")
   public ResponseEntity<?> modifyProduct(
       @RequestBody @Valid ModifyProduct.Request modifyForm,
