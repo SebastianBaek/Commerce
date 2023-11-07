@@ -292,4 +292,75 @@ class ProductServiceTest {
     //then
     assertEquals(ErrorCode.PRODUCT_NOT_FOUND, e.getErrorCode());
   }
+
+  @Test
+  @DisplayName("판매자의 상품 삭제 성공 테스트")
+  void removeProductSuccess() {
+    //given
+    User user = User.builder()
+        .email("test@naver.com")
+        .username("홍길동")
+        .password("1234")
+        .emailVerification(true)
+        .roles(Collections.singletonList("ROLE_SELLER"))
+        .build();
+    user.setId(1L);
+    user.setCreatedAt(LocalDateTime.now());
+
+    Product apple = Product.builder()
+        .productName("사과")
+        .price(1000L)
+        .amount(100L)
+        .maker("의성")
+        .rating(null)
+        .sales(0L)
+        .build();
+
+    given(userRepository.findByUsername(anyString()))
+        .willReturn(Optional.of(user));
+    given(productRepository.findByIdAndUser(anyLong(), any()))
+        .willReturn(Optional.of(apple));
+    //when
+    productService.removeProduct(1L, "홍길동");
+    //then
+    verify(productRepository).delete(any());
+  }
+
+  @Test
+  @DisplayName("판매자의 상품 삭제시 회원 찾기 실패 테스트")
+  void removeProductUserNotFoundFail() {
+    //given
+    given(userRepository.findByUsername(anyString()))
+        .willReturn(Optional.empty());
+    //when
+    CustomException e = assertThrows(
+        CustomException.class, () -> productService.removeProduct(1L, "홍길동"));
+    //then
+    assertEquals(ErrorCode.USER_NOT_FOUND, e.getErrorCode());
+  }
+
+  @Test
+  @DisplayName("판매자의 상품 삭제시 상품 찾기 실패 테스트")
+  void removeProductProductNotFoundFail() {
+    //given
+    User user = User.builder()
+        .email("test@naver.com")
+        .username("홍길동")
+        .password("1234")
+        .emailVerification(true)
+        .roles(Collections.singletonList("ROLE_SELLER"))
+        .build();
+    user.setId(1L);
+    user.setCreatedAt(LocalDateTime.now());
+
+    given(userRepository.findByUsername(anyString()))
+        .willReturn(Optional.of(user));
+    given(productRepository.findByIdAndUser(anyLong(), any()))
+        .willReturn(Optional.empty());
+    //when
+    CustomException e = assertThrows(
+        CustomException.class, () -> productService.removeProduct(1L, "홍길동"));
+    //then
+    assertEquals(ErrorCode.PRODUCT_NOT_FOUND, e.getErrorCode());
+  }
 }
