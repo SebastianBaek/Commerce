@@ -5,9 +5,12 @@ import com.example.commerce.domain.User;
 import com.example.commerce.exception.CustomException;
 import com.example.commerce.exception.ErrorCode;
 import com.example.commerce.model.ModifyProduct;
+import com.example.commerce.model.ProductInfo;
 import com.example.commerce.model.RegisterProduct;
 import com.example.commerce.repository.ProductRepository;
 import com.example.commerce.repository.UserRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -64,5 +67,23 @@ public class ProductService {
     product.setMaker(modifyForm.getMaker());
 
     return product;
+  }
+
+  public List<ProductInfo> getAllSellerProducts(String username) {
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+    List<Product> products = productRepository.findAllByUser(user)
+        .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+    return products.stream().map(product -> ProductInfo.builder()
+            .productName(product.getProductName())
+            .price(product.getPrice())
+            .amount(product.getAmount())
+            .maker(product.getMaker())
+            .rating(product.getRating())
+            .sales(product.getSales())
+            .build())
+        .collect(Collectors.toList());
   }
 }
