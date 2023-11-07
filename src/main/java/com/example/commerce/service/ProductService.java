@@ -86,4 +86,14 @@ public class ProductService {
             .build())
         .collect(Collectors.toList());
   }
+
+  public void removeProduct(Long id, String username) {
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+    Product product = productRepository.findByIdAndUser(id, user)
+        .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+    productRepository.delete(product);
+  }
 }
