@@ -20,8 +20,8 @@ public class CartController {
   @PostMapping("/add/{id}")
   @PreAuthorize("hasRole('COMMON')")
   public ResponseEntity<?> addProduct(
-      @PathVariable Long productId, Authentication authentication) {
-    cartService.addProduct(productId, authentication.getName());
+      @PathVariable Long id, Authentication authentication) {
+    cartService.addProduct(id, authentication.getName());
     return ResponseEntity.ok().build();
   }
 
