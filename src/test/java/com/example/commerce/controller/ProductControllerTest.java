@@ -19,6 +19,7 @@ import com.example.commerce.model.ModifyProduct;
 import com.example.commerce.model.ProductInfo;
 import com.example.commerce.model.RegisterProduct;
 import com.example.commerce.repository.UserRepository;
+import com.example.commerce.service.CartService;
 import com.example.commerce.service.ProductService;
 import com.example.commerce.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,6 +53,9 @@ class ProductControllerTest extends CommonApiTest {
 
   @MockBean
   private UserRepository userRepository;
+
+  @MockBean
+  private CartService cartService;
 
   @Test
   @DisplayName("판매자의 상품 등록 성공 테스트")
