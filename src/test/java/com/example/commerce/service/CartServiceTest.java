@@ -208,4 +208,116 @@ class CartServiceTest {
     //then
     assertEquals(ErrorCode.CART_NOT_FOUND, e.getErrorCode());
   }
+
+  @Test
+  @DisplayName("회원의 장바구니 상품 삭제 성공 테스트")
+  void removeProductSuccess() {
+    //given
+    User user = User.builder()
+        .email("test@naver.com")
+        .username("홍길동")
+        .password("1234")
+        .emailVerification(true)
+        .roles(Collections.singletonList("ROLE_COMMON"))
+        .build();
+    user.setId(1L);
+    user.setCreatedAt(LocalDateTime.now());
+
+    Product apple = Product.builder()
+        .productName("사과")
+        .price(1000L)
+        .amount(100L)
+        .maker("의성")
+        .rating(null)
+        .sales(0L)
+        .build();
+
+    Cart cart = Cart.builder()
+        .user(user)
+        .product(apple)
+        .amount(1L)
+        .build();
+
+    given(productRepository.findById(anyLong()))
+        .willReturn(Optional.of(apple));
+    given(userRepository.findByUsername(anyString()))
+        .willReturn(Optional.of(user));
+    given(cartRepository.findByUserAndProduct(any(), any()))
+        .willReturn(Optional.of(cart));
+    //when
+    cartService.removeProduct(1L, "홍길동");
+    //then
+    verify(cartRepository).delete(any());
+  }
+
+  @Test
+  @DisplayName("회원의 장바구니 상품 삭제시 상품 찾기 실패 테스트")
+  void removeProductNotFoundFail() {
+    //given
+    given(productRepository.findById(anyLong()))
+        .willReturn(Optional.empty());
+    //when
+    CustomException e = assertThrows(
+        CustomException.class, () -> cartService.removeProduct(1L, "홍길동"));
+    //then
+    assertEquals(ErrorCode.PRODUCT_NOT_FOUND, e.getErrorCode());
+  }
+
+  @Test
+  @DisplayName("회원의 장바구니 상품 삭제시 회원 찾기 실패 테스트")
+  void removeProductUserNotFoundFail() {
+    //given
+    Product apple = Product.builder()
+        .productName("사과")
+        .price(1000L)
+        .amount(100L)
+        .maker("의성")
+        .rating(null)
+        .sales(0L)
+        .build();
+
+    given(productRepository.findById(anyLong()))
+        .willReturn(Optional.of(apple));
+    given(userRepository.findByUsername(anyString()))
+        .willReturn(Optional.empty());
+    //when
+    CustomException e = assertThrows(
+        CustomException.class, () -> cartService.removeProduct(1L, "홍길동"));
+    //then
+    assertEquals(ErrorCode.USER_NOT_FOUND, e.getErrorCode());
+  }
+
+  @Test
+  @DisplayName("회원의 장바구니 상품 삭제시 장바구니 상품 찾기 실패 테스트")
+  void removeProductCartNotFoundFail() {
+    //given
+    Product apple = Product.builder()
+        .productName("사과")
+        .price(1000L)
+        .amount(100L)
+        .maker("의성")
+        .rating(null)
+        .sales(0L)
+        .build();
+
+    User user = User.builder()
+        .email("test@naver.com")
+        .username("홍길동")
+        .password("1234")
+        .emailVerification(true)
+        .roles(Collections.singletonList("ROLE_COMMON"))
+        .build();
+    user.setId(1L);
+    user.setCreatedAt(LocalDateTime.now());
+
+    given(productRepository.findById(anyLong()))
+        .willReturn(Optional.of(apple));
+    given(userRepository.findByUsername(anyString()))
+        .willReturn(Optional.of(user));
+    //when
+    CustomException e = assertThrows(
+        CustomException.class, () -> cartService.removeProduct(1L, "홍길동"));
+    //then
+    assertEquals(ErrorCode.CART_NOT_FOUND, e.getErrorCode());
+  }
 }

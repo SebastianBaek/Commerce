@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -95,5 +96,19 @@ class CartControllerTest extends CommonApiTest {
         .andExpect(content().json(objectMapper.writeValueAsString(cartInfos)))
         .andDo(print());
     verify(cartService).getProducts(anyString());
+  }
+
+  @Test
+  @DisplayName("회원의 장바구니 상품 삭제 성공 테스트")
+  @WithMockUser(authorities = {"ROLE_COMMON"})
+  void removeProductSuccess() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(
+            delete("/cart/remove/1"))
+        .andExpect(status().isOk())
+        .andDo(print());
+    verify(cartService).removeProduct(anyLong(), anyString());
   }
 }
