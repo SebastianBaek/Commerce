@@ -50,4 +50,16 @@ public class CartService {
         .amount(cart.getAmount())
         .build()).collect(Collectors.toList());
   }
+
+  public void removeProduct(Long id, String username) {
+    Product product = productRepository.findById(id)
+        .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+    Cart cart = cartRepository.findByUserAndProduct(user, product)
+        .orElseThrow(() -> new CustomException(ErrorCode.CART_NOT_FOUND));
+    cartRepository.delete(cart);
+  }
 }
