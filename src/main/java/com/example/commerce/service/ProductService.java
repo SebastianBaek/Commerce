@@ -73,7 +73,7 @@ public class ProductService {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-    List<Product> products = productRepository.findAllByUser(user)
+    List<Product> products = productRepository.findByUser(user)
         .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
     return products.stream().map(product -> ProductInfo.builder()

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
   USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "유저가 존재하지 않습니다."),
+  COUPON_NOT_FOUND(HttpStatus.BAD_REQUEST, "쿠폰이 존재하지 않습니다."),
   PRODUCT_NOT_FOUND(HttpStatus.BAD_REQUEST, "상품이 존재하지 않습니다."),
   CART_NOT_FOUND(HttpStatus.BAD_REQUEST, "장바구니에 상품이 존재하지 않습니다."),
   ALREADY_EXISTS_USERNAME(HttpStatus.BAD_REQUEST, "이미 존재하는 아이디입니다."),

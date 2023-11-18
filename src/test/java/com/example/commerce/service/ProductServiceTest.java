@@ -246,7 +246,7 @@ class ProductServiceTest {
 
     given(userRepository.findByUsername(anyString()))
         .willReturn(Optional.of(user));
-    given(productRepository.findAllByUser(any()))
+    given(productRepository.findByUser(any()))
         .willReturn(Optional.of(products));
     //when
     List<ProductInfo> productInfos = productService.getAllSellerProducts("홍길동");
@@ -284,7 +284,7 @@ class ProductServiceTest {
 
     given(userRepository.findByUsername(anyString()))
         .willReturn(Optional.of(user));
-    given(productRepository.findAllByUser(any()))
+    given(productRepository.findByUser(any()))
         .willReturn(Optional.empty());
     //when
     CustomException e = assertThrows(

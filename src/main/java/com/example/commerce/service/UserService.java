@@ -1,6 +1,7 @@
 package com.example.commerce.service;
 
 import com.example.commerce.common.MailComponent;
+import com.example.commerce.domain.Coupon;
 import com.example.commerce.domain.User;
 import com.example.commerce.exception.CustomException;
 import com.example.commerce.exception.ErrorCode;
@@ -8,8 +9,10 @@ import com.example.commerce.model.FindPasswordRequest;
 import com.example.commerce.model.FindUsernameRequest;
 import com.example.commerce.model.LoginUser;
 import com.example.commerce.model.RegisterUser;
+import com.example.commerce.repository.CouponRepository;
 import com.example.commerce.repository.UserRepository;
 import com.example.commerce.security.TokenProvider;
+import java.time.LocalDate;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +28,7 @@ public class UserService {
   private final UserRepository userRepository;
   private final TokenProvider tokenProvider;
   private final MailComponent mailComponent;
+  private final CouponRepository couponRepository;
 
   // 이메일 및 아이디 중복 체크 후 비밀번호를 암호화하여 저장
   public RegisterUser.Response registerUser(RegisterUser.Request registerForm) {
@@ -92,6 +96,11 @@ public class UserService {
 
     user.setEmailVerification(true);
     userRepository.save(user);
+
+    couponRepository.save(Coupon.builder()
+        .saving(5000)
+        .expiration(LocalDate.now().plusDays(30))
+        .build());
   }
 
   public void findUsername(FindUsernameRequest request) {
