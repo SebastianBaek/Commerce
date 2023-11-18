@@ -18,6 +18,7 @@ import com.example.commerce.model.LoginUser;
 import com.example.commerce.model.RegisterUser;
 import com.example.commerce.repository.UserRepository;
 import com.example.commerce.service.CartService;
+import com.example.commerce.service.CouponService;
 import com.example.commerce.service.ProductService;
 import com.example.commerce.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,6 +54,9 @@ class UserControllerTest extends CommonApiTest {
 
   @MockBean
   private CartService cartService;
+
+  @MockBean
+  private CouponService couponService;
 
   @Test
   @DisplayName("유저 회원가입 API 성공 테스트")

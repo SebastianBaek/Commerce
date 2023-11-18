@@ -1,24 +1,22 @@
 package com.example.commerce.controller;
 
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.commerce.CommonApiTest;
-import com.example.commerce.model.CartInfo;
+import com.example.commerce.model.CouponInfo;
 import com.example.commerce.repository.UserRepository;
 import com.example.commerce.service.CartService;
 import com.example.commerce.service.CouponService;
 import com.example.commerce.service.ProductService;
 import com.example.commerce.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -30,15 +28,18 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(CartController.class)
+@WebMvcTest(CouponController.class)
 @MockBean(JpaMetamodelMappingContext.class)
-class CartControllerTest extends CommonApiTest {
+class CouponControllerTest extends CommonApiTest {
 
   @Autowired
   private MockMvc mockMvc;
 
   @Autowired
   private ObjectMapper objectMapper;
+
+  @MockBean
+  private CouponService couponService;
 
   @MockBean
   private CartService cartService;
@@ -52,67 +53,34 @@ class CartControllerTest extends CommonApiTest {
   @MockBean
   private UserRepository userRepository;
 
-  @MockBean
-  private CouponService couponService;
-
   @Test
-  @DisplayName("회원의 장바구니 담기 성공 테스트")
+  @DisplayName("회원의 쿠폰 불러오기 성공 테스트")
   @WithMockUser(authorities = {"ROLE_COMMON"})
-  void addProductSuccess() throws Exception {
+  void getAllCouponSuccess() throws Exception {
     //given
-    //when
-    //then
-    mockMvc.perform(
-            post("/cart/add/1"))
-        .andExpect(status().isOk())
-        .andDo(print());
-    verify(cartService).addProduct(anyLong(), anyString());
-  }
-
-  @Test
-  @DisplayName("회원의 장바구니 상품 불러오기 성공 테스트")
-  @WithMockUser(authorities = {"ROLE_COMMON"})
-  void getProductsSuccess() throws Exception {
-    //given
-    CartInfo cartInfo1 = CartInfo.builder()
-        .productName("apple")
-        .price(1000L)
-        .amount(3L)
+    CouponInfo coupon1 = CouponInfo.builder()
+        .rate(10)
+        .expiration(LocalDate.now().plusDays(30))
+        .build();
+    CouponInfo coupon2 = CouponInfo.builder()
+        .saving(5000)
+        .expiration(LocalDate.now().plusDays(30))
         .build();
 
-    CartInfo cartInfo2 = CartInfo.builder()
-        .productName("pear")
-        .price(2000L)
-        .amount(5L)
-        .build();
+    List<CouponInfo> couponInfos = new ArrayList<>();
+    couponInfos.add(coupon1);
+    couponInfos.add(coupon2);
 
-    List<CartInfo> cartInfos = new ArrayList<>();
-    cartInfos.add(cartInfo1);
-    cartInfos.add(cartInfo2);
-
-    given(cartService.getProducts(anyString()))
-        .willReturn(cartInfos);
+    given(couponService.getAllCoupon(anyString()))
+        .willReturn(couponInfos);
     //when
     //then
     mockMvc.perform(
-            get("/cart/get"))
+            get("/coupon/getAll"))
         .andExpect(status().isOk())
-        .andExpect(content().json(objectMapper.writeValueAsString(cartInfos)))
+        .andExpect(content().json(objectMapper.writeValueAsString(couponInfos)))
         .andDo(print());
-    verify(cartService).getProducts(anyString());
+    verify(couponService).getAllCoupon(anyString());
   }
 
-  @Test
-  @DisplayName("회원의 장바구니 상품 삭제 성공 테스트")
-  @WithMockUser(authorities = {"ROLE_COMMON"})
-  void removeProductSuccess() throws Exception {
-    //given
-    //when
-    //then
-    mockMvc.perform(
-            delete("/cart/remove/1"))
-        .andExpect(status().isOk())
-        .andDo(print());
-    verify(cartService).removeProduct(anyLong(), anyString());
-  }
 }
