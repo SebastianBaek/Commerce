@@ -14,6 +14,7 @@ import com.example.commerce.model.ProductInfo;
 import com.example.commerce.repository.UserRepository;
 import com.example.commerce.service.CartService;
 import com.example.commerce.service.CouponService;
+import com.example.commerce.service.OrderService;
 import com.example.commerce.service.ProductService;
 import com.example.commerce.service.SearchService;
 import com.example.commerce.service.UserService;
@@ -55,6 +56,9 @@ class SearchControllerTest extends CommonApiTest {
 
   @MockBean
   private CouponService couponService;
+
+  @MockBean
+  private OrderService orderService;
 
   @Test
   @DisplayName("상품 불러오기 성공 테스트")

@@ -1,15 +1,15 @@
 package com.example.commerce.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.commerce.CommonApiTest;
-import com.example.commerce.model.CouponInfo;
+import com.example.commerce.model.OrderProduct;
 import com.example.commerce.repository.UserRepository;
 import com.example.commerce.service.CartService;
 import com.example.commerce.service.CouponService;
@@ -18,21 +18,19 @@ import com.example.commerce.service.ProductService;
 import com.example.commerce.service.SearchService;
 import com.example.commerce.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(CouponController.class)
+@WebMvcTest(OrderController.class)
 @MockBean(JpaMetamodelMappingContext.class)
-class CouponControllerTest extends CommonApiTest {
+class OrderControllerTest extends CommonApiTest {
 
   @Autowired
   private MockMvc mockMvc;
@@ -41,10 +39,7 @@ class CouponControllerTest extends CommonApiTest {
   private ObjectMapper objectMapper;
 
   @MockBean
-  private CouponService couponService;
-
-  @MockBean
-  private CartService cartService;
+  private OrderService orderService;
 
   @MockBean
   private ProductService productService;
@@ -56,39 +51,43 @@ class CouponControllerTest extends CommonApiTest {
   private UserRepository userRepository;
 
   @MockBean
-  private SearchService searchService;
+  private CartService cartService;
 
   @MockBean
-  private OrderService orderService;
+  private CouponService couponService;
+
+  @MockBean
+  private SearchService searchService;
 
   @Test
-  @DisplayName("회원의 쿠폰 불러오기 성공 테스트")
+  @DisplayName("회원의 주문 성공 테스트")
   @WithMockUser(authorities = {"ROLE_COMMON"})
-  void getAllCouponSuccess() throws Exception {
+  void orderProductSuccess() throws Exception {
     //given
-    CouponInfo coupon1 = CouponInfo.builder()
-        .rate(10)
-        .expiration(LocalDate.now().plusDays(30))
-        .build();
-    CouponInfo coupon2 = CouponInfo.builder()
-        .saving(5000)
-        .expiration(LocalDate.now().plusDays(30))
+    OrderProduct.Request request = OrderProduct.Request.builder()
+        .productId(1L)
+        .amount(1L)
+        .address("서울시")
         .build();
 
-    List<CouponInfo> couponInfos = new ArrayList<>();
-    couponInfos.add(coupon1);
-    couponInfos.add(coupon2);
+    OrderProduct.Response response = OrderProduct.Response.builder()
+        .orderId(1L)
+        .productName("사과")
+        .sum(1000L)
+        .amount(1L)
+        .address("서울시")
+        .build();
 
-    given(couponService.getAllCoupon(anyString()))
-        .willReturn(couponInfos);
+    given(orderService.orderProduct(any(), anyString()))
+        .willReturn(response);
     //when
     //then
     mockMvc.perform(
-            get("/coupon/getAll"))
+            post("/order")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
-        .andExpect(content().json(objectMapper.writeValueAsString(couponInfos)))
+        .andExpect(content().json(objectMapper.writeValueAsString(response)))
         .andDo(print());
-    verify(couponService).getAllCoupon(anyString());
   }
-
 }

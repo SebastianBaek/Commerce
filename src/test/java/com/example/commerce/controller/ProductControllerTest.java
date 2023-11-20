@@ -21,6 +21,7 @@ import com.example.commerce.model.RegisterProduct;
 import com.example.commerce.repository.UserRepository;
 import com.example.commerce.service.CartService;
 import com.example.commerce.service.CouponService;
+import com.example.commerce.service.OrderService;
 import com.example.commerce.service.ProductService;
 import com.example.commerce.service.SearchService;
 import com.example.commerce.service.UserService;
@@ -64,6 +65,9 @@ class ProductControllerTest extends CommonApiTest {
 
   @MockBean
   private SearchService searchService;
+
+  @MockBean
+  private OrderService orderService;
 
   @Test
   @DisplayName("판매자의 상품 등록 성공 테스트")

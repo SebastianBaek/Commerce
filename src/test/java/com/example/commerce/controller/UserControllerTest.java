@@ -19,6 +19,7 @@ import com.example.commerce.model.RegisterUser;
 import com.example.commerce.repository.UserRepository;
 import com.example.commerce.service.CartService;
 import com.example.commerce.service.CouponService;
+import com.example.commerce.service.OrderService;
 import com.example.commerce.service.ProductService;
 import com.example.commerce.service.SearchService;
 import com.example.commerce.service.UserService;
@@ -61,6 +62,9 @@ class UserControllerTest extends CommonApiTest {
 
   @MockBean
   private SearchService searchService;
+
+  @MockBean
+  private OrderService orderService;
 
   @Test
   @DisplayName("유저 회원가입 API 성공 테스트")
