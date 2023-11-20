@@ -1,6 +1,7 @@
 package com.example.commerce.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -90,6 +91,31 @@ class SearchControllerTest extends CommonApiTest {
         .andExpect(content().json(objectMapper.writeValueAsString(productInfos)))
         .andDo(print());
     verify(searchService).searchProduct(any());
+  }
+
+  @Test
+  @DisplayName("상품 상세 정보 불러오기 성공 테스트")
+  void getProductInfoSuccess() throws Exception {
+    //given
+    ProductInfo apple = ProductInfo.builder()
+        .productName("사과")
+        .price(1000L)
+        .amount(100L)
+        .maker("의성")
+        .rating(null)
+        .sales(0L)
+        .build();
+
+    given(searchService.getProductInfo(anyLong()))
+        .willReturn(apple);
+    //when
+    //then
+    mockMvc.perform(
+            get("/search/1"))
+        .andExpect(status().isOk())
+        .andExpect(content().json(objectMapper.writeValueAsString(apple)))
+        .andDo(print());
+    verify(searchService).getProductInfo(anyLong());
   }
 
 }

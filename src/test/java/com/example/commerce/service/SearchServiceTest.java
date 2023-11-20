@@ -1,14 +1,19 @@
 package com.example.commerce.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import com.example.commerce.domain.Product;
+import com.example.commerce.exception.CustomException;
+import com.example.commerce.exception.ErrorCode;
 import com.example.commerce.model.ProductInfo;
 import com.example.commerce.repository.ProductRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.collections4.Trie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -67,5 +72,39 @@ class SearchServiceTest {
     //then
     assertEquals("사과", response.get(0).getProductName());
     assertEquals("배", response.get(1).getProductName());
+  }
+
+  @Test
+  @DisplayName("상품 상세 정보 불러오기 성공 테스트")
+  void getProductInfoSuccess() {
+    //given
+    Product apple = Product.builder()
+        .productName("사과")
+        .price(1000L)
+        .amount(100L)
+        .maker("의성")
+        .rating(null)
+        .sales(0L)
+        .build();
+
+    given(productRepository.findById(anyLong()))
+        .willReturn(Optional.of(apple));
+    //when
+    ProductInfo response = searchService.getProductInfo(1L);
+    //then
+    assertEquals("사과", response.getProductName());
+  }
+
+  @Test
+  @DisplayName("상품 상세 정보 불러오기 실패 테스트")
+  void getProductInfoFail() {
+    //given
+    given(productRepository.findById(anyLong()))
+        .willReturn(Optional.empty());
+    //when
+    CustomException e = assertThrows(
+        CustomException.class, () -> searchService.getProductInfo(1L));
+    //then
+    assertEquals(ErrorCode.PRODUCT_NOT_FOUND, e.getErrorCode());
   }
 }
