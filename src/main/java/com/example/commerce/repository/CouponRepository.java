@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
   Optional<List<Coupon>> findByUser(User user);
+
+  Optional<Coupon> findByUserAndId(User user, Long id);
 }
