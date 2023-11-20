@@ -1,6 +1,8 @@
 package com.example.commerce.config;
 
 import java.util.Properties;
+import org.apache.commons.collections4.Trie;
+import org.apache.commons.collections4.trie.PatriciaTrie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,5 +53,10 @@ public class AppConfig {
     properties.setProperty("mail.debug", "true");
     properties.setProperty("mail.default.encoding", "UTF-8");
     return properties;
+  }
+
+  @Bean
+  public Trie<String, String> trie() {
+    return new PatriciaTrie<>();
   }
 }

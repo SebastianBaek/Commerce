@@ -3,6 +3,7 @@ package com.example.commerce.controller;
 import com.example.commerce.model.ModifyProduct;
 import com.example.commerce.model.RegisterProduct;
 import com.example.commerce.service.ProductService;
+import com.example.commerce.service.SearchService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
   private final ProductService productService;
+  private final SearchService searchService;
 
   @PostMapping("/register")
   @PreAuthorize("hasRole('SELLER')")
   public ResponseEntity<?> registerProduct(
       @RequestBody @Valid RegisterProduct.Request registerForm, Authentication authentication) {
+    searchService.addAutocompleteKeyword(registerForm.getProductName());
     return ResponseEntity.ok(
         productService.registerProduct(registerForm, authentication.getName()));
   }
@@ -51,6 +54,7 @@ public class ProductController {
   @DeleteMapping("/remove/{id}")
   @PreAuthorize("hasRole('SELLER')")
   public ResponseEntity<?> removeProduct(@PathVariable Long id, Authentication authentication) {
+    searchService.deleteAutocomplete(id);
     productService.removeProduct(id, authentication.getName());
     return ResponseEntity.ok().build();
   }
