@@ -2,6 +2,7 @@ package com.example.commerce.controller;
 
 import com.example.commerce.service.SearchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,5 +19,10 @@ public class SearchController {
   @GetMapping("/autocomplete")
   public ResponseEntity<?> autocomplete(@RequestParam String keyword) {
     return ResponseEntity.ok(searchService.getAutocompleteKeyword(keyword));
+  }
+
+  @GetMapping
+  public ResponseEntity<?> searchProduct(Pageable pageable) {
+    return ResponseEntity.ok(searchService.searchProduct(pageable));
   }
 }
