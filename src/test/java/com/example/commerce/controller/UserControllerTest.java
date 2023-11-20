@@ -20,6 +20,7 @@ import com.example.commerce.repository.UserRepository;
 import com.example.commerce.service.CartService;
 import com.example.commerce.service.CouponService;
 import com.example.commerce.service.ProductService;
+import com.example.commerce.service.SearchService;
 import com.example.commerce.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
@@ -57,6 +58,9 @@ class UserControllerTest extends CommonApiTest {
 
   @MockBean
   private CouponService couponService;
+
+  @MockBean
+  private SearchService searchService;
 
   @Test
   @DisplayName("유저 회원가입 API 성공 테스트")

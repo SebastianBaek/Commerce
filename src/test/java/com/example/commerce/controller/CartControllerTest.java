@@ -17,6 +17,7 @@ import com.example.commerce.repository.UserRepository;
 import com.example.commerce.service.CartService;
 import com.example.commerce.service.CouponService;
 import com.example.commerce.service.ProductService;
+import com.example.commerce.service.SearchService;
 import com.example.commerce.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -54,6 +55,9 @@ class CartControllerTest extends CommonApiTest {
 
   @MockBean
   private CouponService couponService;
+
+  @MockBean
+  private SearchService searchService;
 
   @Test
   @DisplayName("회원의 장바구니 담기 성공 테스트")
