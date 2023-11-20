@@ -48,4 +48,19 @@ public class SearchService {
         .sales(product.getSales())
         .build()).collect(Collectors.toList());
   }
+
+  @Cacheable(key = "#id", value = "Product")
+  public ProductInfo getProductInfo(Long id) {
+    Product product = productRepository.findById(id)
+        .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+    return ProductInfo.builder()
+        .productName(product.getProductName())
+        .price(product.getPrice())
+        .amount(product.getAmount())
+        .maker(product.getMaker())
+        .rating(product.getRating())
+        .sales(product.getSales())
+        .build();
+  }
 }
